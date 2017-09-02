@@ -1,17 +1,25 @@
 #!/usr/bin/env python3
+#
+# monitor3
+#
+# Simple python script to display an macOS, Linux logo in ASCII art
+# Along with basic system information.
+#
+__version__="0.1"
 
+# Import libraries
 import os
 import re
 import uuid
 from subprocess import Popen, PIPE # Subprocess management
 from sys import platform as _platform
-import socket       # Low-level networking interface 
+import socket       # Low-level networking interface
 import psutil as ps
 import datetime as dt
 import json
 import argparse
 import math
-import platform # Access to underlying platform's identifying data 
+import platform # Access to underlying platform's identifying data
 
 # ---------------Dictionaries---------------#
 #  https://wiki.archlinux.org/index.php/Color_Bash_Prompt
@@ -141,7 +149,7 @@ class Output(object):
         Attempts to determine the distribution and draw the logo.However, if it
         can't, then it defaults to 'Linux' and draws a simple linux penguin.
         """
-        dist = _platform.lower() # lowcase 
+        dist = _platform.lower() # lowcase
         pname = ''
 
         if dist == 'darwin':
@@ -154,7 +162,7 @@ class Output(object):
             dist = 'openSUSE'
         else:
             dist, pname = self.readDistro()
-        
+
         return dist, pname
 
     def readDistro(self, f='/etc/os-release'):
@@ -195,11 +203,11 @@ class Output(object):
             if not name:
                 name = 'Linux'
             return name, ''
-        
+
     def getDistro(self):
         """
         Ideally returns the pretty distro name instead of the short distro name.
-        If we weren't able to figure out the distro,it defaults to Linux 
+        If we weren't able to figure out the distro,it defaults to Linux
         """
         if self.pname:
             return self.pname
@@ -226,7 +234,7 @@ class User(object):
     def __init__(self):
         self.key = 'User'
         self.value = os.getenv('USER')
-    
+
 class Hostname(object):
     def __init__(self):
         self.key = 'Hostname'
@@ -253,7 +261,7 @@ class Uptime(object):
     def __init__(self):
         up = ps.boot_time()
         up = dt.datetime.fromtimestamp(up)
-        now = dt.datetime.now() 
+        now = dt.datetime.now()
         diff = now - up
         uptime = '%d days %d hrs %d mins' % (diff.days, diff.seconds / 3600, (diff.seconds % 3600) / 60)
         self.key = 'Uptime'
@@ -312,13 +320,13 @@ class RAM(object):
         ramdisplay = '%s %s/ %s %s' %(used, size, total, size)
 
         self.key = 'RAM'
-        self.value = ramdisplay 
+        self.value = ramdisplay
 
 class Disk(object):
     def __init__(self, json=False):
         disk = ps.disk_usage('/')
         total = disk.total
-        used = disk.used 
+        used = disk.used
 
         used, total, size = autoSize(used, total)
         usedpercent = math.ceil(float(used) / float(total) * 100.0)
@@ -434,6 +442,4 @@ def main():
     out.output(args['json'])
 
 if __name__ == '__main__':
-    main() 
-
-    
+    main()
